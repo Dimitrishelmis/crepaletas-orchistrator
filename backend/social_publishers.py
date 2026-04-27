@@ -60,9 +60,7 @@ def publish_post(post, platform: str):
     if normalized not in ALLOWED_PLATFORMS:
         return {
             "success": False,
-            "platform": normalized,
-            "mode": "blocked",
-            "error": "Target platform is not allowed.",
+            "error": "Unsupported platform",
         }
 
     if normalized == "instagram":

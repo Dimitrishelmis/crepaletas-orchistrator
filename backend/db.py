@@ -174,11 +174,16 @@ def reject_post(post_id: int):
     return get_generated_post(post_id) if updated else None
 
 
-def publish_post_record(post_id: int, target_platform: str, publish_result: str):
+def publish_post_record(
+    post_id: int,
+    target_platform: str,
+    publish_result: str,
+    status: str = "published_mock",
+):
     published_at = datetime.now().isoformat(timespec="seconds")
     updated = update_post_status(
         post_id,
-        "published_mock",
+        status,
         published_at=published_at,
         target_platform=target_platform,
         publish_result=publish_result,

@@ -292,6 +292,7 @@ def publish_generated_post(post_id: int, request: PublishRequest):
             post_id,
             platform,
             json.dumps(result, ensure_ascii=False),
+            status="published_mock",
         )
     else:
         update_post_status(
@@ -302,7 +303,16 @@ def publish_generated_post(post_id: int, request: PublishRequest):
         )
         updated_post = get_generated_post(post_id)
 
-    return {"success": result.get("success", False), "result": result, "post": updated_post}
+    return {
+        "success": result.get("success", False),
+        "result": result,
+        "post_id": post_id,
+        "platform": platform,
+        "mode": result.get("mode"),
+        "message": result.get("message") or result.get("error"),
+        "status": updated_post.get("status") if updated_post else None,
+        "post": updated_post,
+    }
 
 
 @app.get("/api/images")
