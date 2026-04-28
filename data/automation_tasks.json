@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "created_at": "2026-04-28T11:32:51",
+    "approved_at": null,
+    "ran_at": null,
+    "type": "pip_install",
+    "package": "requests",
+    "status": "pending",
+    "command_preview": "python -m pip install requests",
+    "report_file": null,
+    "result": null
+  },
+  {
+    "id": 2,
+    "created_at": "2026-04-28T11:34:23",
+    "approved_at": null,
+    "ran_at": null,
+    "type": "pip_install",
+    "package": "requests",
+    "status": "pending",
+    "command_preview": "python -m pip install requests",
+    "report_file": null,
+    "result": null
+  },
+  {
+    "id": 3,
+    "created_at": "2026-04-28T11:36:07",
+    "approved_at": "2026-04-28T12:18:40",
+    "ran_at": "2026-04-28T12:19:20",
+    "type": "pip_install",
+    "package": "bmad",
+    "status": "failed",
+    "command_preview": "python -m pip install bmad",
+    "report_file": "/home/dimitris/marketing-orchestrator/reports/automation_task_3_2026-04-28_12-19-20.txt",
+    "result": "Package install failed."
+  },
+  {
+    "id": 4,
+    "created_at": "2026-04-28T12:19:39",
+    "approved_at": "2026-04-28T12:19:49",
+    "ran_at": "2026-04-28T12:20:11",
+    "type": "pip_install",
+    "package": "bmad",
+    "status": "failed",
+    "command_preview": "python -m pip install bmad",
+    "report_file": "/home/dimitris/marketing-orchestrator/reports/automation_task_4_2026-04-28_12-20-11.txt",
+    "result": "Package install failed."
+  }
+]

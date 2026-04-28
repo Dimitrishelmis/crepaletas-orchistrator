@@ -27,6 +27,15 @@ from openclaw_tasks import (
     greek_quality_check,
     prepare_batch_posts_from_memory,
 )
+from automation_tasks import (
+    create_install_task,
+    create_code_write_task,
+    create_code_replace_task,
+    list_tasks as list_automation_tasks,
+    get_task as get_automation_task,
+    approve_task as approve_automation_task,
+    run_task as run_automation_task,
+)
 from social_publishers import ALLOWED_PLATFORMS, publish_post, real_publishing_enabled
 from pathlib import Path
 
@@ -60,6 +69,21 @@ class MemoryAddRequest(BaseModel):
 class MemorySearchRequest(BaseModel):
     query: str
     limit: int = 10
+
+
+class InstallTaskRequest(BaseModel):
+    package: str
+
+
+class CodeWriteTaskRequest(BaseModel):
+    path: str
+    content: str
+
+
+class CodeReplaceTaskRequest(BaseModel):
+    path: str
+    find: str
+    replace: str
 
 
 @app.on_event("startup")
@@ -287,19 +311,21 @@ def publish_generated_post(post_id: int, request: PublishRequest):
         return {"success": False, "error": "Target platform is not allowed."}
 
     result = publish_post(post, platform)
+    publish_result_json = json.dumps(result, ensure_ascii=False)
     if result.get("success"):
+        publish_status = "published" if result.get("mode") == "real" else "published_mock"
         updated_post = publish_post_record(
             post_id,
             platform,
-            json.dumps(result, ensure_ascii=False),
-            status="published_mock",
+            publish_result_json,
+            status=publish_status,
         )
     else:
         update_post_status(
             post_id,
-            "failed",
+            "publish_failed",
             target_platform=platform,
-            publish_result=json.dumps(result, ensure_ascii=False),
+            publish_result=publish_result_json,
         )
         updated_post = get_generated_post(post_id)
 
@@ -367,6 +393,54 @@ def openclaw_task_greek_quality(post_id: int):
 @app.get("/openclaw/tasks/batch-posts/{category}")
 def openclaw_task_batch_posts(category: str):
     return prepare_batch_posts_from_memory(category=category)
+
+
+@app.post("/automation/tasks/pip")
+def create_pip_install_task(request: InstallTaskRequest):
+    return create_install_task("pip", request.package)
+
+
+@app.post("/automation/tasks/pip-github")
+def create_pip_github_install_task(request: InstallTaskRequest):
+    return create_install_task("pip_github", request.package)
+
+
+@app.post("/automation/tasks/npm")
+def create_npm_install_task(request: InstallTaskRequest):
+    return create_install_task("npm", request.package)
+
+
+@app.post("/automation/tasks/code-write")
+def create_code_write_endpoint(request: CodeWriteTaskRequest):
+    return create_code_write_task(request.path, request.content)
+
+
+@app.post("/automation/tasks/code-replace")
+def create_code_replace_endpoint(request: CodeReplaceTaskRequest):
+    return create_code_replace_task(request.path, request.find, request.replace)
+
+
+@app.get("/automation/tasks")
+def automation_tasks(limit: int = 10):
+    return list_automation_tasks(limit=limit)
+
+
+@app.get("/automation/tasks/{task_id}")
+def automation_task_detail(task_id: int):
+    task = get_automation_task(task_id)
+    if not task:
+        return {"found": False, "error": "Task not found."}
+    return {"found": True, "task": task}
+
+
+@app.post("/automation/tasks/{task_id}/approve")
+def approve_task_endpoint(task_id: int):
+    return approve_automation_task(task_id)
+
+
+@app.post("/automation/tasks/{task_id}/run")
+def run_task_endpoint(task_id: int):
+    return run_automation_task(task_id)
 
 
 @app.get("/dashboard", response_class=HTMLResponse)
