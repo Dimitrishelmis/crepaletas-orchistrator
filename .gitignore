@@ -19,3 +19,25 @@ reports/
 # OS/editor
 .DS_Store
 .vscode/
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+
+# Logs
+*.log
+logs/
+
+# OS/editor
+.DS_Store
+.vscode/
